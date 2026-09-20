@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio of Horia Scarlat, software engineer with a focus on machine learning, deep learning and computer vision.">
+    <title>Portfolio - Horia Scarlat</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+
+    <!-- KaTeX must execute before js/main.js; deferred scripts and modules run in document order. -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+</head>
+
+<body>
+    <div id="home" class="sidebar">
+        <div class="home-container">
+            <div class="title-and-contacts">
+                <h1 class="home-title">
+                    Horia Scarlat
+                </h1>
+                <nav class="contact-links">
+                    <a href="https://www.linkedin.com/in/horia-mihai-scarlat/" target="_blank">
+                        <i class="fa-brands fa-linkedin linkedin-icon"></i>
+                    </a>
+                    <a href="https://github.com/boriabyte" target="_blank">
+                        <i class="fa-brands fa-github github-icon"></i>
+                    </a>
+                    <a href="mailto:horia.scarlat02@gmail.com" target="_blank">
+                        <i class="fa-solid fa-envelope mail-icon"></i>
+                    </a>
+                </nav>
+            </div>
+            <h2 class="home-description">
+                Software Engineer with over 2 years of experience building scalable enterprise systems, with a strong
+                interest in machine learning, deep learning and computer vision.
+            </h2>
+            <div class="home-card">
+                <nav class="nav-links">
+                    <a href="#about" data-section="about">About</a>
+                    <a href="#projects" data-section="projects">Projects</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reserved for a future project demo gif. Empty for now. -->
+    <div class="home-media" id="home-media"></div>
+
+    <section id="about" class="panel">
+        <h1 class="panel-title">
+            About
+        </h1>
+        <div class="panel-content">
+            <p>Electronic engineering graduate, with a focus on applied electronics and computer engineering.</p>
+            <p>Currently, I work as a software engineer, building scalable enterprise banking systems:
+                garnishment pipelines, back-office backend systems, large scale file imports, payment systems
+                and automation. I was the main backend developer for an internal automated testing framework
+                utilizing Selenium and Java, meant for fast-tracking company-built web applications testing
+                before production shipping.</p>
+            <p>I am strongly interested in machine learning, deep learning, computer vision and natural
+                language processing. I am currently pursuing a Master's Degree in Artificial Intelligence at
+                the "POLITEHNICA" University of Bucharest, with a thesis titled "American Sign Language
+                Translation using Numerical Feature Representations".</p>
+        </div>
+    </section>
+
+    <section id="projects" class="panel">
+        <div class="projects-list-view">
+            <h1 class="panel-title">
+                Projects
+            </h1>
+            <ul class="panel-content project-links">
+                <li><a href="#" class="project-link" data-project="asl">American Sign Language Translator</a></li>
+                <li><a href="#" class="project-link" data-project="lsc">Language Specific Correction for Romanian</a></li>
+                <li><a href="#" class="project-link" data-project="facade">Building Facade Classifier</a></li>
+                <li><a href="#" class="project-link" data-project="wireless-security">Wireless Security System</a></li>
+                <li><a href="#" class="project-link" data-project="morse-code">Morse Code Player</a></li>
+                <li><a href="#" class="project-link" data-project="pazaak">Pazaak</a></li>
+            </ul>
+        </div>
+
+        <div class="project-detail" data-project="asl" data-partial="partials/projects/asl.html"></div>
+        <div class="project-detail" data-project="lsc" data-partial="partials/projects/lsc.html"></div>
+        <div class="project-detail" data-project="facade" data-partial="partials/projects/facade.html"></div>
+        <div class="project-detail" data-project="wireless-security" data-partial="partials/projects/wireless-security.html"></div>
+        <div class="project-detail" data-project="morse-code" data-partial="partials/projects/morse-code.html"></div>
+        <div class="project-detail" data-project="pazaak" data-partial="partials/projects/pazaak.html"></div>
+    </section>
+</body>
+
+</html>

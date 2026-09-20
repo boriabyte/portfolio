@@ -1,0 +1,14 @@
+/* ---------- Icons: contact links and hover state ---------- */
+
+i {
+    color: #ffffff;
+    font-size: var(--title-size);
+    transition: color 0.3s ease, font-size 0.05s ease;
+}
+
+.linkedin-icon:hover,
+.mail-icon:hover,
+.github-icon:hover {
+    color: #e40303;
+    font-size: calc(var(--title-size) + 6px);
+}

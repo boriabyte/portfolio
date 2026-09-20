@@ -1,0 +1,202 @@
+<button class="back-button" type="button">
+    <span class="back-arrow">&lt;</span> Back
+</button>
+<h1 class="panel-title">
+    Wireless Security System
+    <a href="https://github.com/boriabyte/wireless-security-system"
+        target="_blank" rel="noopener" class="project-github-link">
+        <i class="fa-brands fa-github"></i>
+    </a>
+</h1>
+<div class="panel-content">
+    <p id="wss-summary">
+        Three-node wireless security proof of concept built at a Google &times; Digital Stack IoT
+        summer school with two fellow students. Three ESP32 boards, one per team member, exchange
+        card-scan and sensor events peer-to-peer over Wi-Fi using ESP-NOW, with no access point or
+        internet connection required, verified by testing the whole setup offline.
+    </p>
+
+    <nav class="toc" aria-label="Table of contents">
+        <p class="toc-heading">Contents</p>
+        <ul>
+            <li><a href="#wss-summary" class="toc-link">Summary</a></li>
+            <li><a href="#wss-stack" class="toc-link">Stack</a></li>
+            <li><a href="#wss-hardware" class="toc-link">Hardware &amp; pin map</a></li>
+            <li><a href="#wss-architecture" class="toc-link">System architecture</a></li>
+            <li><a href="#wss-verification" class="toc-link">Card verification</a></li>
+            <li><a href="#wss-communication" class="toc-link">Communication</a></li>
+            <li><a href="#wss-firmware" class="toc-link">Firmware structure</a></li>
+            <li><a href="#wss-challenges" class="toc-link">Challenges</a></li>
+            <li><a href="#wss-next" class="toc-link">Limitations &amp; next steps</a></li>
+        </ul>
+    </nav>
+
+    <h2 id="wss-stack" class="content-heading">Stack</h2>
+    <p>
+        Arduino IDE and C++ (Arduino framework) on the ESP32 core. Radio communication uses ESP-NOW
+        (<code>esp_now.h</code>) with the Wi-Fi radio in station mode; cards are read through the
+        <code>MFRC522</code> driver over SPI, with an NDEF layer (<code>NfcAdapter</code>) on top for
+        reading structured card data instead of raw bytes.
+    </p>
+
+    <h2 id="wss-hardware" class="content-heading">Hardware &amp; pin map</h2>
+    <table class="metrics-table spec-table">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Qty</th>
+                <th>Interface / role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">ESP32 board</th>
+                <td>3</td>
+                <td>One per team member. Wi-Fi radio in station mode, used only for ESP-NOW; serial
+                    console at 115200 baud for logging.</td>
+            </tr>
+            <tr>
+                <th scope="row">RC522 reader + NFC cards</th>
+                <td>3&nbsp;+&nbsp;3</td>
+                <td>SPI bus, chip-select on GPIO&nbsp;5. No reset pin is configured (the driver is given
+                    <code>UINT8_MAX</code> in its place).</td>
+            </tr>
+            <tr>
+                <th scope="row">Status LEDs</th>
+                <td>6</td>
+                <td>Two per board: GPIO&nbsp;15 lights for an accepted card, GPIO&nbsp;21 for a
+                    rejected one.</td>
+            </tr>
+            <tr>
+                <th scope="row">HC-SR04 ultrasonic sensor</th>
+                <td>1</td>
+                <td>Proximity sensing, added to one board by one of the team members.</td>
+            </tr>
+            <tr>
+                <th scope="row">Piezo buzzer</th>
+                <td>1</td>
+                <td>Audible alert on another board, triggered by specific card conditions.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="figure-caption">
+        Pin numbers come from the shared base sketch in the repository. The HC-SR04 and buzzer logic
+        was contributed per board by different team members and is not part of that sketch.
+    </p>
+
+    <h2 id="wss-architecture" class="content-heading">System architecture</h2>
+    <p>
+        Every board is both a node and a peer: each carries its own RC522 reader and two status LEDs,
+        so any member can scan a card and have the result reach the other two. The three boards form a
+        full mesh, with each board registering the other two by MAC address, so there is no central
+        controller.
+    </p>
+    <figure class="diagram">
+        <img src="assets/images/wireless-security/architecture-diagram.svg"
+            alt="Topology diagram: three ESP32 nodes, each with an RC522 reader and two LEDs, connected pairwise by bidirectional ESP-NOW links with no access point. Node 1 also has an HC-SR04 proximity sensor and node 2 a piezo buzzer."
+            class="diagram-image">
+        <figcaption>
+            <a href="assets/images/wireless-security/architecture-diagram.svg" download="wss-architecture-diagram.svg"
+                class="diagram-download">
+                <i class="fa-solid fa-download"></i> Download diagram
+            </a>
+        </figcaption>
+    </figure>
+    <p>
+        Scanning an NFC card checks the access code stored on it against a shared unlock condition; a
+        match lights the green LED and broadcasts confirmation to the other two boards, a mismatch lights
+        red on all three. One board additionally samples the HC-SR04 proximity sensor and another
+        carries the piezo buzzer, both broadcasting their readings as ESP-NOW packets alongside the card
+        events, so any board's sensor state is visible to the whole mesh.
+    </p>
+
+    <h2 id="wss-verification" class="content-heading">Card verification</h2>
+    <p>
+        The check is done on the reading board, one scan at a time:
+    </p>
+    <ol class="stage-list">
+        <li>The main loop polls the reader; when a tag is present it is read and its type and UID are
+            logged to the serial console.</li>
+        <li>If the tag carries an NDEF message, each record's payload is read as raw bytes and turned
+            into a string.</li>
+        <li>The first three characters are dropped, which is consistent with the layout of an NDEF text
+            record, where a status byte and a two-letter language code precede the actual text.</li>
+        <li>The remainder is parsed as an integer and compared against the shared access code compiled
+            into the firmware.</li>
+        <li>A match lights the accepted-card LED for 1.5&nbsp;s, anything else lights the rejected-card
+            LED for the same time.</li>
+        <li>Either way, the parsed value is sent to the other boards, so accepted and rejected scans are
+            both visible mesh-wide.</li>
+    </ol>
+
+    <h2 id="wss-communication" class="content-heading">Communication</h2>
+    <p>
+        ESP-NOW is Espressif's connectionless protocol that runs directly on the Wi-Fi radio: no
+        association, no DHCP, no router. The boards enable station mode, initialize ESP-NOW and register
+        the other two boards as peers on channel&nbsp;0 (the current channel). Sending with a null
+        destination address delivers the packet to every registered peer at once, which is how a single
+        scan reaches both other boards.
+    </p>
+    <p>
+        Events travel as a small fixed-size C struct copied straight onto the wire, avoiding any JSON or
+        other serialization overhead:
+    </p>
+    <pre>offset  size  type   field  meaning
+0       4     int    x      access code parsed from the card
+4       4     float  y      reserved, always 0</pre>
+    <p>
+        That is 8&nbsp;bytes per event, far below the 250-byte ESP-NOW payload limit. The receiving side
+        declares a layout-identical struct and unpacks the incoming bytes with <code>memcpy</code>. Two
+        callbacks complete the picture: a send callback that logs the peer's MAC address together with the
+        delivery status, and a receive callback that logs the byte count and decoded fields. Peer MAC
+        addresses are hardcoded per board; the repository leaves them as placeholders, to be filled in
+        with the values each board reports on the serial console.
+    </p>
+
+    <h2 id="wss-firmware" class="content-heading">Firmware structure</h2>
+    <p>
+        <code>setup()</code> configures the LED pins and the serial console, puts Wi-Fi in station mode,
+        initializes ESP-NOW, registers both callbacks and both peers, and finally brings up SPI, the
+        RC522 and the NDEF adapter. <code>loop()</code> runs the verification sequence above and then
+        waits two seconds before polling again.
+    </p>
+    <p>
+        The sketch is written so that its transmitter block and receiver block can be dropped
+        independently, depending on the role a given board plays. A sensor-only board, for
+        instance, needs no receive callback. The packet structs are likewise placeholders meant to be
+        swapped for whatever payload a board needs to carry.
+    </p>
+
+    <h2 id="wss-challenges" class="content-heading">Challenges</h2>
+    <p>
+        Settling on a simple struct-based packet format over the other boards' MAC addresses, and the
+        RC522 readers occasionally missing a card scan. The polling cadence is a plausible contributor to
+        the latter: the loop ends with a two-second delay, and a scan adds another 1.5&nbsp;s of LED time,
+        so a card presented between polls is only picked up on the next pass. Beyond a card-based
+        security system, the same broadcast pattern generalizes to short-range wireless telemetry of any
+        kind, such as distance, temperature or other threshold-based conditions.
+    </p>
+
+    <h2 id="wss-next" class="content-heading">Limitations &amp; next steps</h2>
+    <p>
+        <strong>Transport security</strong>: as a proof of concept, peers are registered with encryption
+        disabled and the access code travels in plaintext, so it could be sniffed and replayed by anyone
+        in radio range. ESP-NOW's per-peer encryption would be the first fix, with a challenge-response
+        or rolling counter on top.
+    </p>
+    <p>
+        <strong>Credential model</strong>: every card carries the same access code and card UIDs are
+        logged but not used for authorization. Checking a per-card UID against a table (or a signed
+        token) would allow individual cards to be revoked.
+    </p>
+    <p>
+        <strong>Loop timing</strong>: polling and LED timing both rely on blocking <code>delay()</code>
+        calls. Moving to <code>millis()</code>-based scheduling would shorten the polling interval and
+        keep the board responsive while an LED is lit.
+    </p>
+    <p>
+        <strong>Delivery handling</strong>: the send result is only logged. Adding retries on failed
+        delivery, and replacing hardcoded MAC addresses with a pairing or discovery step, would make
+        adding a fourth node a configuration change instead of a firmware edit.
+    </p>
+</div>

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 520" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9a9a9a" />
+    </marker>
+  </defs>
+
+  <!-- ============ CONNECTORS (drawn first, under nodes) ============ -->
+  <g stroke="#9a9a9a" stroke-width="3" fill="none" marker-end="url(#arrowhead)">
+    <!-- top row chain -->
+    <line x1="240" y1="150" x2="320" y2="150" />
+    <line x1="540" y1="150" x2="600" y2="150" />
+    <line x1="820" y1="150" x2="885" y2="150" />
+    <line x1="1045" y1="150" x2="1085" y2="150" />
+
+    <!-- bottom row chain -->
+    <line x1="240" y1="380" x2="415" y2="380" />
+    <line x1="585" y1="380" x2="755" y2="380" />
+
+    <!-- top branch into concatenation (elbow) -->
+    <polyline points="1275,150 1400,150 1400,190" />
+    <!-- bottom branch into concatenation (elbow) -->
+    <polyline points="945,380 1400,380 1400,340" />
+
+    <!-- concatenation -> dense -->
+    <line x1="1495" y1="265" x2="1550" y2="265" />
+    <!-- dense -> output -->
+    <line x1="1695" y1="265" x2="1745" y2="265" />
+  </g>
+
+  <!-- ============ TOP BRANCH NODES ============ -->
+  <!-- Input (20 x 93) -->
+  <rect x="60" y="105" width="180" height="90" rx="18" fill="#dbe9fa" stroke="#6fa8dc" stroke-width="2.5" />
+  <text x="150" y="142" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Input</text>
+  <text x="150" y="166" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">(20 &#215; 93)</text>
+
+  <!-- Conv block 1 -->
+  <rect x="320" y="95" width="220" height="110" rx="10" fill="#cfe2f3" stroke="#6fa8dc" stroke-width="2.5" />
+  <text x="430" y="128" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Conv1D +</text>
+  <text x="430" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">BatchNorm +</text>
+  <text x="430" y="172" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Dropout +</text>
+  <text x="430" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">MaxPool1D</text>
+
+  <!-- Conv block 2 -->
+  <rect x="600" y="95" width="220" height="110" rx="10" fill="#cfe2f3" stroke="#6fa8dc" stroke-width="2.5" />
+  <text x="710" y="128" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Conv1D +</text>
+  <text x="710" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">BatchNorm +</text>
+  <text x="710" y="172" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Dropout +</text>
+  <text x="710" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">MaxPool1D</text>
+
+  <!-- BiLSTM (top) hexagon: center 965,150 w190 h100 -->
+  <polygon points="870,150 917,100 1013,100 1060,150 1013,200 917,200"
+           fill="#d9ead3" stroke="#6aa84f" stroke-width="2.5" />
+  <text x="965" y="157" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">BiLSTM</text>
+
+  <!-- Attention (top) diamond: center 1180,150 w190 h110 -->
+  <polygon points="1085,150 1180,95 1275,150 1180,205" fill="#ead1f5" stroke="#a64d9e" stroke-width="2.5" />
+  <text x="1180" y="157" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a1a">Attention</text>
+
+  <!-- ============ BOTTOM BRANCH NODES ============ -->
+  <!-- Input (20 x 14) -->
+  <rect x="60" y="335" width="180" height="90" rx="18" fill="#fff2cc" stroke="#f1c232" stroke-width="2.5" />
+  <text x="150" y="372" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">Input</text>
+  <text x="150" y="396" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">(20 &#215; 14)</text>
+
+  <!-- BiLSTM (bottom) hexagon: center 500,380 w190 h100 -->
+  <polygon points="405,380 452,330 548,330 595,380 548,430 452,430"
+           fill="#d9ead3" stroke="#6aa84f" stroke-width="2.5" />
+  <text x="500" y="387" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">BiLSTM</text>
+
+  <!-- Attention (bottom) diamond: center 850,380 w190 h110 -->
+  <polygon points="755,380 850,325 945,380 850,435" fill="#ead1f5" stroke="#a64d9e" stroke-width="2.5" />
+  <text x="850" y="387" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a1a">Attention</text>
+
+  <!-- ============ MERGE / TAIL ============ -->
+  <!-- Concatenation ellipse: center 1400,265 rx95 ry85 -->
+  <ellipse cx="1400" cy="265" rx="95" ry="85" fill="#b0dfe0" stroke="#45818e" stroke-width="2.5" />
+  <text x="1400" y="272" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Concatenation</text>
+
+  <!-- Dense layer octagon: center 1622,265, half=75 c=44 -->
+  <polygon points="1591,190 1653,190 1697,234 1697,296 1653,340 1591,340 1547,296 1547,234"
+           fill="#f9cb9c" stroke="#e69138" stroke-width="2.5" />
+  <text x="1622" y="258" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">Dense</text>
+  <text x="1622" y="280" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">layer</text>
+
+  <!-- Output pill: center 1855,265 w190 h80 -->
+  <rect x="1760" y="225" width="190" height="80" rx="40" fill="#6a3b2a" stroke="#4a281c" stroke-width="2.5" />
+  <text x="1855" y="272" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">Output</text>
+</svg>

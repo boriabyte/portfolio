@@ -1,0 +1,70 @@
+/* ---------- Figures: demo images, diagrams and captions ---------- */
+
+.demo-example {
+    width: 100%;
+    max-width: 760px;
+    margin-bottom: 24px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.demo-example-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.demo-image {
+    display: block;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+}
+
+.diagram {
+    margin: 16px 0;
+}
+
+.diagram-image {
+    display: block;
+    width: 100%;
+}
+
+.diagram figcaption {
+    margin-top: 10px;
+}
+
+.figure-caption {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.diagram-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    text-decoration: none;
+    font-size: 15px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.diagram-download:hover {
+    color: #e40303;
+}
+
+.diagram-download i {
+    font-size: 15px;
+    transition: color 0.3s ease;
+}
+
+.diagram-download:hover i {
+    color: #e40303;
+}

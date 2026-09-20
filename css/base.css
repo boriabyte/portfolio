@@ -1,0 +1,23 @@
+/* ---------- Base: reset, page defaults and design tokens ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: #272525;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+}
+
+:root {
+    --title-size: clamp(36px, 3.6vw, 90px);
+}

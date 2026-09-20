@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="400" viewBox="0 0 680 400" role="img">
+<title>Wireless security system topology</title>
+<desc>Three ESP32 nodes, each with an RC522 NFC reader and two status LEDs, are fully connected peer-to-peer over ESP-NOW with no access point. Node 1 also carries an HC-SR04 proximity sensor and node 2 a piezo buzzer. Each node registers the other two as peers and can both send and receive.</desc>
+<style>
+  text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  .bg { fill: none; }
+  .h { font-size: 14px; font-weight: 600; }
+  .s { font-size: 12px; font-weight: 400; }
+  .teal rect { fill: #E1F5EE; stroke: #0F6E56; stroke-width: 1; }
+  .teal .h { fill: #085041; }
+  .teal .s { fill: #0F6E56; }
+  .arr { stroke: #9a9a9a; stroke-width: 1.5; fill: none; }
+  .lbl { font-size: 13px; font-weight: 600; fill: #C9C7BD; }
+  .note { font-size: 12px; fill: #9a9a9a; }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect class="bg" x="0.5" y="0.5" width="679" height="399" rx="12"/>
+
+<!-- links (drawn first so the nodes sit on top) -->
+<line class="arr" x1="292" y1="124" x2="168" y2="248" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line class="arr" x1="388" y1="124" x2="512" y2="248" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line class="arr" x1="244" y1="300" x2="436" y2="300" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+<g class="teal">
+  <rect x="240" y="24" width="200" height="96" rx="8"/>
+  <text class="h" x="340" y="48" text-anchor="middle" dominant-baseline="central">ESP32 node 1</text>
+  <text class="s" x="340" y="72" text-anchor="middle" dominant-baseline="central">RC522 reader &#183; 2 LEDs</text>
+  <text class="s" x="340" y="94" text-anchor="middle" dominant-baseline="central">+ HC-SR04 proximity sensor</text>
+</g>
+<g class="teal">
+  <rect x="40" y="252" width="200" height="96" rx="8"/>
+  <text class="h" x="140" y="276" text-anchor="middle" dominant-baseline="central">ESP32 node 2</text>
+  <text class="s" x="140" y="300" text-anchor="middle" dominant-baseline="central">RC522 reader &#183; 2 LEDs</text>
+  <text class="s" x="140" y="322" text-anchor="middle" dominant-baseline="central">+ piezo buzzer</text>
+</g>
+<g class="teal">
+  <rect x="440" y="252" width="200" height="96" rx="8"/>
+  <text class="h" x="540" y="276" text-anchor="middle" dominant-baseline="central">ESP32 node 3</text>
+  <text class="s" x="540" y="300" text-anchor="middle" dominant-baseline="central">RC522 reader &#183; 2 LEDs</text>
+</g>
+
+<text class="lbl" x="340" y="196" text-anchor="middle" dominant-baseline="central">ESP-NOW &#183; peer-to-peer</text>
+<text class="note" x="340" y="216" text-anchor="middle" dominant-baseline="central">no access point, no internet</text>
+<text class="note" x="340" y="284" text-anchor="middle" dominant-baseline="central">8-byte packets</text>
+
+<text class="note" x="340" y="380" text-anchor="middle" dominant-baseline="central">Every node registers the other two as peers and can both send and receive.</text>
+</svg>

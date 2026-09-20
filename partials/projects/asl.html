@@ -1,0 +1,153 @@
+<button class="back-button" type="button">
+    <span class="back-arrow">&lt;</span> Back
+</button>
+<h1 class="panel-title">
+    American Sign Language Translator
+    <span class="closed-source-tag">Closed Source</span>
+</h1>
+<div class="panel-content">
+    <p id="asl-summary">
+        ASL translator which aims to exclusively use purely numerical training data, skipping the
+        overhead brought by image and video processing. The dataset directly consists of millions of
+        samples that contain kinematic and discrete measurements such as: wrist-palm angle, digit-palm
+        angle, digit-wrist angle, interfinger angles, what fingers are extended, thumb is outside of
+        fist or not etc. They total out to 107 (93 kinematic, 14 discrete) engineered features,
+        calculated from scratch utilizing hand landmarks from Mediapipe. As of right now, the final
+        number of classes into which classification is done amounts to approximately 40.
+    </p>
+
+    <nav class="toc" aria-label="Table of contents">
+        <p class="toc-heading">Contents</p>
+        <ul>
+            <li><a href="#asl-summary" class="toc-link">Summary</a></li>
+            <li><a href="#asl-stack" class="toc-link">Stack</a></li>
+            <li><a href="#asl-model" class="toc-link">Model</a></li>
+            <li><a href="#asl-features" class="toc-link">Feature engineering</a></li>
+            <li><a href="#asl-generalization" class="toc-link">Data splitting &amp; generalization</a></li>
+            <li><a href="#asl-training" class="toc-link">Training &amp; inference</a></li>
+            <li><a href="#asl-capabilities" class="toc-link">Current capabilities</a></li>
+            <li><a href="#asl-demo" class="toc-link">Demo</a></li>
+        </ul>
+    </nav>
+
+    <h2 id="asl-stack" class="content-heading">Stack</h2>
+    <p>
+        Python 3.11, MediaPipe, OpenCV, TensorFlow.
+    </p>
+
+    <h2 id="asl-model" class="content-heading">Model</h2>
+    <p>
+        Handcrafted, employing a dual input topology, one branch focusing on the kinematic features,
+        while the other focuses on the discrete ones. The output of each branch is concatenated with
+        the other and run through dense layers for the final probability classification over each of
+        the classes. The architecture combines one-dimensional convolution layers, batch normalization,
+        one-dimensional pooling, bidirectional long short-term memory cells and attention. Below is a
+        high level diagram for visualization:
+    </p>
+    <figure class="diagram">
+        <img src="assets/images/asl/architecture-diagram.svg"
+            alt="Dual-branch model architecture: a main branch (20x93 input) passes through two Conv1D/BatchNorm/Dropout/MaxPool blocks, a BiLSTM and attention; a logic branch (20x14 input) passes through a BiLSTM and attention only. The two 256-dimensional outputs are concatenated, then go through a dense layer with dropout and a softmax output layer."
+            class="diagram-image">
+        <figcaption>
+            <a href="assets/images/asl/architecture-diagram.svg" download="asl-architecture-diagram.svg"
+                class="diagram-download">
+                <i class="fa-solid fa-download"></i> Download diagram
+            </a>
+        </figcaption>
+    </figure>
+    <p>
+        <strong>Main branch (20 &times; 93)</strong>: two convolutional blocks, each made of a
+        <code>Conv1D</code> layer (64, then 128 filters, kernel size 3, ReLU, same padding, L2
+        regularization of 1e-4), batch normalization, 0.3 dropout and max pooling of size 2. These
+        extract local temporal patterns from the kinematic stream while halving the sequence length at
+        every block (20 &rarr; 10 &rarr; 5 timesteps). The resulting 5 &times; 128 tensor is read by a
+        bidirectional LSTM with 128 units per direction (0.3 input and recurrent dropout), producing
+        5 &times; 256 features that describe the gesture both forwards and backwards in time.
+    </p>
+    <p>
+        <strong>Logic branch (20 &times; 14)</strong>: the discrete descriptors, being low-dimensional
+        and mostly binary or ordinal, skip the convolutions and go straight into an equivalent
+        bidirectional LSTM (128 units per direction, same dropout), giving 20 &times; 256 features.
+    </p>
+    <p>
+        <strong>Attention</strong>: each BiLSTM is followed by a custom additive attention layer. Every
+        timestep is scored through a learned projection (<code>tanh(XW + b)</code> followed by a
+        learned scoring vector), a softmax over time turns the scores into weights, and the weighted
+        sum of the timesteps is returned. This lets the network emphasize the most discriminative
+        frames of a sign and collapses each branch into a fixed 256-dimensional vector.
+    </p>
+    <p>
+        <strong>Fusion and output</strong>: the two branch vectors are concatenated into a
+        512-dimensional representation, passed through a 256-unit ReLU dense layer with 0.4 dropout,
+        and finally through a softmax layer (L2 regularization of 1e-4) that outputs a probability for
+        each class. The whole network has roughly 0.73 million parameters for the current ~40 classes.
+    </p>
+
+    <h2 id="asl-features" class="content-heading">Feature engineering</h2>
+    <p>
+        Instead of training on raw pixels, the dataset is built entirely from hand-landmark features.
+        Each source video is a single labelled recording of one ASL letter, with the label parsed
+        directly from the filename (e.g. <code>A.mp4</code>, <code>A2.mp4</code>). Every frame is
+        passed through MediaPipe Hands, which produces 21 3D landmarks, from which two complementary
+        feature vectors are computed:
+    </p>
+    <p>
+        <strong>Main vector (93 dimensions)</strong>: 31 normalized geometric features plus their
+        first- and second-order temporal deltas &mdash; finger-to-wrist angles and curvature,
+        inter-finger spread statistics, compactness, wrist velocity and acceleration, fingertip and
+        palm distances, hand aspect ratio, finger curl, and fingertip offsets.
+    </p>
+    <p>
+        <strong>Logic vector (14 dimensions)</strong>: finger extension states, finger count, finger
+        activity scores, and thumb-position logic (inside the fist, between which fingers, fingers
+        above the thumb) &mdash; added to disambiguate look-alike closed-fist letters such as A, M, N,
+        S and T.
+    </p>
+    <p>
+        Features are z-score normalized online over a rolling 30-frame window, using the same code
+        path at recording time and at live inference. Sequences are cut into 20-frame sliding windows
+        with a stride of 5, giving roughly 1,400&ndash;1,600 samples per letter, and the result is
+        stored as a single <code>.npz</code> archive.
+    </p>
+
+    <h2 id="asl-generalization" class="content-heading">Data splitting &amp; generalization</h2>
+    <p>
+        Every window keeps the ID of its source video, so the train/validation split is kept
+        group-disjoint at the video level &mdash; no window from a given clip appears on both sides.
+        This matters because early iterations of the project split by window instead of by video,
+        letting the same signer (and near-duplicate windows) appear in both training and validation,
+        which inflated performance metrics. Enforcing video-level disjointedness dropped the metrics
+        significantly, but confirmed the model was generalizing rather than memorizing signers.
+    </p>
+
+    <h2 id="asl-training" class="content-heading">Training &amp; inference</h2>
+    <p>
+        The model is trained with the Adam optimizer (learning rate 1e-4) on sparse categorical
+        cross-entropy over integer-encoded labels, with a batch size of 32 and a maximum of 50 epochs,
+        on the video-level split described above. Besides the dropout and L2 penalties in the
+        architecture, training uses three callbacks: early stopping on validation loss (patience 5,
+        restoring the best weights), learning-rate reduction on plateau (factor 0.5, floor 1e-6) and
+        checkpointing of the best model by validation loss. The fitted label encoder is saved next to
+        the model, so live inference decodes predictions exactly as they were encoded in training.
+    </p>
+    <p>
+        At inference time, the same feature pipeline runs on the live webcam stream. Frames are
+        buffered until 20 frames with a detected hand have been collected (frames without a hand are
+        skipped, not padded), the model predicts once on that chunk, and the buffer is cleared. At
+        30 fps, each prediction therefore covers roughly two thirds of a second of signing.
+    </p>
+
+    <h2 id="asl-capabilities" class="content-heading">Current capabilities</h2>
+    <p>
+        Right now, the translator covers the entire ASL alphabet (letters A-Z), all digits (0-9), some
+        words/expressions (THANK YOU, PLEASE, ME, SEE, DOG). Due to similarities between some digits and
+        letters (e.g. 3 and W), a contextual disambiguation layer had to be built in order to deduce the
+        signed digit by seeing it used in a constructed sentence.
+    </p>
+
+    <h2 id="asl-demo" class="content-heading">Demo</h2>
+    <p>
+        Below are some video excerpts of the system during inference time. Its current instability, due to
+        the need for more refinement concerning predictions, and for a larger dataset, can be observed.
+    </p>
+</div>

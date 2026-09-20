@@ -1,0 +1,40 @@
+/* ---------- Table of contents ---------- */
+
+.toc {
+    width: 100%;
+    max-width: 760px;
+    margin: 8px 0 16px;
+    padding: 20px 24px;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+}
+
+.toc-heading {
+    margin: 0 0 12px;
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.toc ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toc-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.toc-link:hover {
+    color: #e40303;
+}

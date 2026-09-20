@@ -1,0 +1,55 @@
+/* ---------- Content: body text, headings, code blocks and lists ---------- */
+
+.panel-content {
+    width: 100%;
+    max-width: 760px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.panel-content p+p {
+    margin-top: 16px;
+}
+
+.content-link {
+    color: #e40303;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.3s ease;
+}
+
+.content-link:hover {
+    color: #ff5c5c;
+}
+
+.content-heading {
+    width: 100%;
+    max-width: 760px;
+    margin: 8px 0 4px;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.panel-content pre {
+    margin: 20px 0;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: pre;
+    overflow-x: auto;
+}
+
+.panel-content ol.stage-list {
+    margin: 8px 0 0;
+    padding-left: 22px;
+}
+
+.panel-content ol.stage-list li+li {
+    margin-top: 8px;
+}

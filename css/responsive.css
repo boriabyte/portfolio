@@ -1,0 +1,19 @@
+/* ---------- Small screens: panels become full-width overlays ---------- */
+
+@media (max-width: 1050px) {
+    :root {
+        --title-size: clamp(20px, 7vw, 40px);
+    }
+
+    .sidebar {
+        width: 100vw;
+    }
+
+    .home-media {
+        display: none;
+    }
+
+    .panel {
+        left: 0;
+    }
+}

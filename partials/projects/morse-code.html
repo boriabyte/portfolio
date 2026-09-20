@@ -1,0 +1,191 @@
+<button class="back-button" type="button">
+    <span class="back-arrow">&lt;</span> Back
+</button>
+<h1 class="panel-title">
+    Morse Code Player
+    <a href="https://github.com/boriabyte/morse-code-player"
+        target="_blank" rel="noopener" class="project-github-link">
+        <i class="fa-brands fa-github"></i>
+    </a>
+</h1>
+<div class="panel-content">
+    <p id="morse-summary">
+        ESP32-driven Morse code transceiver: text typed into the serial console is translated
+        letter-by-letter into Morse timing and played back audibly through a piezo buzzer while the
+        corresponding characters are shown on a 16&times;2 I2C LCD.
+    </p>
+
+    <nav class="toc" aria-label="Table of contents">
+        <p class="toc-heading">Contents</p>
+        <ul>
+            <li><a href="#morse-summary" class="toc-link">Summary</a></li>
+            <li><a href="#morse-stack" class="toc-link">Stack</a></li>
+            <li><a href="#morse-hardware" class="toc-link">Hardware</a></li>
+            <li><a href="#morse-flow" class="toc-link">Signal flow</a></li>
+            <li><a href="#morse-timing" class="toc-link">Timing</a></li>
+            <li><a href="#morse-encoding" class="toc-link">Character encoding</a></li>
+            <li><a href="#morse-display" class="toc-link">Display</a></li>
+            <li><a href="#morse-challenges" class="toc-link">Challenges</a></li>
+            <li><a href="#morse-next" class="toc-link">Limitations &amp; next steps</a></li>
+        </ul>
+    </nav>
+
+    <h2 id="morse-stack" class="content-heading">Stack</h2>
+    <p>
+        Arduino IDE and C++ (Arduino framework). <code>Wire</code> for the I2C bus,
+        <code>LiquidCrystal_I2C</code> for the display, and <code>Tone32</code> as a drop-in replacement
+        for the <code>tone()</code>/<code>noTone()</code> functions missing on this ESP32 core.
+    </p>
+
+    <h2 id="morse-hardware" class="content-heading">Hardware</h2>
+    <table class="metrics-table spec-table">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Interface</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">ESP32 board</th>
+                <td>USB serial, 115200 baud</td>
+                <td>Receives the text to translate from the serial console and runs the whole sketch
+                    in <code>loop()</code>.</td>
+            </tr>
+            <tr>
+                <th scope="row">Piezo buzzer</th>
+                <td>GPIO&nbsp;18</td>
+                <td>Plays every dot and dash as a fixed 1&nbsp;kHz tone.</td>
+            </tr>
+            <tr>
+                <th scope="row">16&times;2 LCD + I2C backpack</th>
+                <td>I2C, address <code>0x27</code></td>
+                <td>Powered from the board's 5&nbsp;V pin. The backpack's on-board potentiometer has to be
+                    trimmed by hand before any text is visible.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="morse-flow" class="content-heading">Signal flow</h2>
+    <p>
+        The whole program is a single polling loop. Text arrives one character at a time, is matched to
+        a pattern function that drives the buzzer, and is then mirrored to the display.
+    </p>
+    <figure class="diagram">
+        <img src="assets/images/morse-code/signal-flow.svg"
+            alt="Signal flow diagram: the serial console feeds loop(), which reads one character per pass. An audio path runs from a pattern function (dots, dashes, pauses) to the piezo buzzer on GPIO 18 at 1 kHz. A display path echoes the character, clears the LCD and writes the buffered text to the 16x2 I2C LCD at address 0x27."
+            class="diagram-image">
+        <figcaption>
+            <a href="assets/images/morse-code/signal-flow.svg" download="morse-signal-flow.svg"
+                class="diagram-download">
+                <i class="fa-solid fa-download"></i> Download diagram
+            </a>
+        </figcaption>
+    </figure>
+    <p>
+        Each pass through <code>loop()</code>:
+    </p>
+    <ol class="stage-list">
+        <li>Check whether the serial console has anything waiting.</li>
+        <li>Read a single character and match it, case-insensitively, against the 26 letters, the 10
+            digits and the space.</li>
+        <li>Call the matching pattern function, which composes the right sequence of dots and dashes
+            (a space calls the word pause instead).</li>
+        <li>Echo the character back to the serial console, wait 100&nbsp;ms and clear the LCD.</li>
+        <li>Write whatever is still waiting in the serial buffer to the LCD.</li>
+    </ol>
+
+    <h2 id="morse-timing" class="content-heading">Timing</h2>
+    <p>
+        A single base time unit (<code>timeUnit</code>, 100&nbsp;ms) drives every symbol, so the whole
+        transmission can be rescaled by changing one number. The durations follow the international
+        1:3:3:7 ratios for dot, dash, letter gap and word gap:
+    </p>
+    <table class="metrics-table spec-table">
+        <thead>
+            <tr>
+                <th>Element</th>
+                <th>Tone</th>
+                <th>Delay afterwards</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Dot</th>
+                <td>1 unit (100&nbsp;ms)</td>
+                <td>2 units (200&nbsp;ms)</td>
+            </tr>
+            <tr>
+                <th scope="row">Dash</th>
+                <td>3 units (300&nbsp;ms)</td>
+                <td>4 units (400&nbsp;ms)</td>
+            </tr>
+            <tr>
+                <th scope="row">Letter pause</th>
+                <td>-</td>
+                <td>3 units (300&nbsp;ms), added after a letter's last element</td>
+            </tr>
+            <tr>
+                <th scope="row">Word pause</th>
+                <td>-</td>
+                <td>7 units (700&nbsp;ms), on a space</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        At a 100&nbsp;ms unit the nominal sending speed is 12 words per minute (1200&nbsp;ms divided by
+        the unit length, the standard PARIS convention).
+    </p>
+
+    <h2 id="morse-encoding" class="content-heading">Character encoding</h2>
+    <p>
+        Each of the 26 letters and 10 digits has its own hand-written function that strings together
+        <code>dot()</code> and <code>dash()</code> calls, built from the internationally established
+        Morse table:
+    </p>
+    <pre>A  .-      K  -.-     U  ..-     0  -----
+B  -...    L  .-..    V  ...-    1  .----
+C  -.-.    M  --      W  .--     2  ..---
+D  -..     N  -.      X  -..-    3  ...--
+E  .       O  ---     Y  -.--    4  ....-
+F  ..-.    P  .--.    Z  --..    5  .....
+G  --.     Q  --.-               6  -....
+H  ....    R  .-.                7  --...
+I  ..      S  ...                8  ---..
+J  .---    T  -                  9  ----.</pre>
+
+    <h2 id="morse-display" class="content-heading">Display</h2>
+    <p>
+        The 16&times;2 LCD is addressed at <code>0x27</code> and initialized with its backlight on.
+        After every character has been played, the display is cleared and then filled with the text
+        read from the serial buffer, so it always shows the most recent input rather than an
+        ever-growing log.
+    </p>
+
+    <h2 id="morse-challenges" class="content-heading">Challenges</h2>
+    <p>
+        Swapping in a colleague's ESP32 after the original board failed, and figuring out that the LCD's
+        backlight needed the potentiometer on its I2C module manually trimmed with a screwdriver before
+        any text would become visible on the display.
+    </p>
+
+    <h2 id="morse-next" class="content-heading">Limitations &amp; next steps</h2>
+    <p>
+        <strong>Display and playback are coupled</strong>: the display update consumes everything left in
+        the serial buffer, so for a multi-character line the first character is played as Morse and the
+        remainder is mirrored to the LCD in one go. Queuing incoming characters, playing them one by one
+        and echoing each as it plays would keep the two paths in step.
+    </p>
+    <p>
+        <strong>Pauses and character set</strong>: the digit functions (and letter O) never call the
+        letter pause, so consecutive digits run together, and anything outside letters, digits and space,
+        punctuation included, is silently ignored.
+    </p>
+    <p>
+        <strong>Structure</strong>: 36 near-identical functions could collapse into a single lookup
+        table of patterns and one playback routine, which would shrink the sketch considerably and remove
+        the copy-paste risk. Playback also relies on blocking <code>delay()</code> calls, so the board
+        can do nothing else while a message plays.
+    </p>
+</div>

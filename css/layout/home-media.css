@@ -1,0 +1,27 @@
+/* ---------- Right side, home state: reserved for a future demo gif ---------- */
+
+.home-media {
+    position: fixed;
+    top: 0;
+    left: 50vw;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+
+    background-color: #181818;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-media::before {
+    content: "project demo coming soon";
+    padding: 40px;
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}

@@ -1,0 +1,50 @@
+/* ---------- Project header: GitHub link and status tags ---------- */
+
+.project-github-link {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+    line-height: 0;
+}
+
+.project-github-link i {
+    font-size: 28px;
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.project-github-link:hover i {
+    color: #e40303;
+}
+
+.closed-source-tag,
+.in-progress-tag {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 16px;
+
+    width: 160px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: nowrap;
+
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+
+    border-radius: 999px;
+    padding: 4px 12px;
+}
+
+.closed-source-tag {
+    color: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.in-progress-tag {
+    margin-left: 8px;
+
+    color: #e40303;
+    border: 1px solid rgba(228, 3, 3, 0.4);
+}

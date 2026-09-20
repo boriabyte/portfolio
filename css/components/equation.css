@@ -1,0 +1,22 @@
+/* ---------- Equations (KaTeX display blocks) ---------- */
+
+.equation {
+    width: 100%;
+    max-width: 760px;
+    margin: 16px 0;
+    padding: 16px 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+
+    overflow-x: auto;
+}
+
+.equation-label {
+    display: block;
+    margin-top: 6px;
+
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: right;
+}

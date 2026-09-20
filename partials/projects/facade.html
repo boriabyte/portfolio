@@ -1,0 +1,249 @@
+<button class="back-button" type="button">
+    <span class="back-arrow">&lt;</span> Back
+</button>
+<h1 class="panel-title">
+    Building Facade Classifier
+    <a href="https://github.com/boriabyte/ai-projects/tree/main/facade-classification/src"
+        target="_blank" rel="noopener" class="project-github-link">
+        <i class="fa-brands fa-github"></i>
+    </a>
+</h1>
+<div class="panel-content">
+    <p id="facade-summary">
+        Unsupervised computer vision pipeline that sorts building fa&ccedil;ades into three
+        architectural categories &mdash; industrial, vernacular and transitional &mdash; using
+        handcrafted geometric features rather than a trained classifier. It runs over
+        <a href="https://www.kaggle.com/datasets/balraj98/facades-dataset" target="_blank"
+            rel="noopener" class="content-link">a 400-image dataset</a>, with every stage from edge
+        detection to clustering to evaluation implemented from scratch on top of NumPy. A
+        <a href="assets/docs/facade-classification-report.pdf" target="_blank"
+            rel="noopener" class="content-link">short accompanying report</a> covers the mathematical
+        apparatus and evaluation in full.
+    </p>
+
+    <nav class="toc" aria-label="Table of contents">
+        <p class="toc-heading">Contents</p>
+        <ul>
+            <li><a href="#facade-summary" class="toc-link">Summary</a></li>
+            <li><a href="#facade-stack" class="toc-link">Stack</a></li>
+            <li><a href="#facade-approach" class="toc-link">Approach</a></li>
+            <li><a href="#facade-features" class="toc-link">Feature engineering</a></li>
+            <li><a href="#facade-clustering" class="toc-link">Clustering &amp; assignment</a></li>
+            <li><a href="#facade-results" class="toc-link">Results &amp; evaluation</a></li>
+            <li><a href="#facade-usage" class="toc-link">Running the project</a></li>
+        </ul>
+    </nav>
+
+    <h2 id="facade-stack" class="content-heading">Stack</h2>
+    <p>
+        Python 3, NumPy, Pillow, Matplotlib for visualization. No OpenCV, scikit-learn or other CV/ML
+        libraries &mdash; convolution, symmetry search, PCA, k-means and the clustering metrics are all
+        hand-implemented, in order to build understanding of the underlying mathematics rather than
+        calling into a pre-built method.
+    </p>
+
+    <h2 id="facade-approach" class="content-heading">Approach</h2>
+    <p>
+        The pipeline is deliberately split into five explicit, interpretable stages rather than a
+        single end-to-end black box:
+    </p>
+    <ol class="stage-list">
+        <li>mathematical analysis of the fa&ccedil;ade images (grayscale conversion, gradient-based edge
+            extraction)</li>
+        <li>construction of an interpretable geometric feature space</li>
+        <li>dimensionality reduction via PCA to inspect the intrinsic structure of that feature space</li>
+        <li>unsupervised k-means clustering into three groups</li>
+        <li>assignment of new, unseen samples to the learned clusters, with a confidence score</li>
+    </ol>
+
+    <h2 id="facade-features" class="content-heading">Feature engineering</h2>
+    <p>
+        Each image is converted to grayscale and contrast-normalized (median/MAD centering through a
+        soft <code>tanh</code> squash) to reduce sensitivity to illumination. Spatial gradients
+        <code>G<sub>x</sub></code>, <code>G<sub>y</sub></code> are computed with a hand-written Sobel
+        convolution, giving an edge magnitude map that emphasizes structural contours and repetitive
+        architectural elements such as window grids and cornices:
+    </p>
+    <div class="equation">$$E(x,y) = \sqrt{G_x(x,y)^2 + G_y(x,y)^2}$$</div>
+    <p>
+        <strong>Reflection symmetry</strong> is scored by brute-force searching candidate axes,
+        parameterized by angle &theta; and offset &rho;, over a range of angles and offsets. For each
+        axis hypothesis the edge map is reflected with bilinear sampling to obtain <code>(x',y')</code>
+        and compared against the original:
+    </p>
+    <div class="equation">$$S_{ref} = \frac{\sum E(x,y)\,E(x',y')}{\sum E(x,y)^2}$$</div>
+    <p>
+        the maximum score across all tested axes is kept as the final symmetry measure. A weighting
+        mask discards the top and bottom margins of the image so sky and ground don't bias the axis
+        search toward the fa&ccedil;ade's silhouette.
+    </p>
+    <p>
+        <strong>Periodicity</strong> is measured separately along both axes by projecting the edge map
+        onto one-dimensional profiles,
+    </p>
+    <div class="equation">$$p_x(x) = \sum_y E(x,y), \qquad p_y(y) = \sum_x E(x,y)$$</div>
+    <p>
+        then taking the strongest peak of each profile's autocorrelation within a predefined lag range:
+    </p>
+    <div class="equation">$$S_{per} = \max_{\ell \in [\ell_{\min},\, \ell_{\max}]} \operatorname{corr}(p,\, p_\ell)$$</div>
+    <p>
+        which captures the repetition of window bays horizontally and floors vertically. Edge density
+        rounds this out as the share of pixels exceeding a fixed edge-magnitude threshold &tau;,
+    </p>
+    <div class="equation">$$D_{edge} = \frac{1}{HW}\sum_{x,y} \mathbb{1}_{E(x,y) > \tau}$$</div>
+    <p>
+        alongside a horizontal/vertical anisotropy scalar <code>A</code>. Together, every fa&ccedil;ade
+        collapses into a compact 5-dimensional feature vector:
+    </p>
+    <div class="equation">$$\mathbf{x} = \begin{bmatrix} S_{ref} & S_{per}^{x} & S_{per}^{y} & D_{edge} & A \end{bmatrix}^{\top}$$</div>
+
+    <div class="demo-example">
+        <p class="demo-example-label">Example &mdash; industrial fa&ccedil;ade</p>
+        <img src="assets/images/facade/example-industrial.png"
+            alt="Industrial facade: a repeating grid of faceted, pyramid-like metal panels, exhibiting strong geometric regularity and modular repetition."
+            class="demo-image">
+    </div>
+    <div class="demo-example">
+        <p class="demo-example-label">Example &mdash; vernacular fa&ccedil;ade</p>
+        <img src="assets/images/facade/example-vernacular.png"
+            alt="Vernacular facade: an irregular brick lattice with balconies, planters and climbing greenery, showing locally-derived proportions rather than a repeated module."
+            class="demo-image">
+    </div>
+
+    <h2 id="facade-clustering" class="content-heading">Clustering &amp; assignment</h2>
+    <p>
+        The five features are z-score standardized on the training set,
+    </p>
+    <div class="equation">$$\mathbf{x}' = \frac{\mathbf{x} - \boldsymbol{\mu}}{\boldsymbol{\sigma}}$$</div>
+    <p>
+        optionally reduced to two dimensions with a from-scratch, covariance-based PCA &mdash;
+        eigen-decomposing the covariance matrix of the standardized feature matrix <code>X</code>,
+    </p>
+    <div class="equation">$$\mathbf{C} = \frac{1}{N-1}\mathbf{X}^{\top}\mathbf{X}$$</div>
+    <p>
+        and projecting onto the leading eigenvectors &mdash; then clustered with a hand-implemented
+        k-means (<em>k</em>=3, up to 300 iterations) that minimizes the within-cluster sum of squared
+        distances:
+    </p>
+    <div class="equation">$$\sum_{k=1}^{K}\sum_{\mathbf{x}_i \in C_k} \lVert \mathbf{x}_i - \boldsymbol{\mu}_k \rVert^2$$</div>
+    <p>
+        Rather than hardcoding which cluster is which, each cluster's centroid <code>&mu;<sub>k</sub></code>
+        is read back in standardized feature space and labelled automatically from its most distinctive
+        dimensions &mdash; industrial fa&ccedil;ades trending toward strong periodicity and geometric
+        regularity, vernacular ones toward greater irregularity and contextual variation. At inference,
+        a new image goes through the same feature extraction, is standardized with the saved training
+        mean/scale, optionally reprojected through the saved PCA components, and assigned to its
+        nearest centroid. Assignment certainty is reported as a distance-based confidence score,
+    </p>
+    <div class="equation">$$\text{conf} = 1 - \frac{d_1}{d_1+d_2}$$</div>
+    <p>
+        the relative margin between the distances <code>d<sub>1</sub></code> and <code>d<sub>2</sub></code>
+        to the nearest and second-nearest centroid &mdash; values close to 1 indicate an unambiguous
+        match, values near 0.5 flag a transitional fa&ccedil;ade sitting between two categories.
+    </p>
+
+    <h2 id="facade-results" class="content-heading">Results &amp; evaluation</h2>
+    <p>
+        Clustering the 400 fa&ccedil;ades with <em>k</em>=3 and projecting onto the first two principal
+        components gives a visibly separable, if partially overlapping, structure:
+    </p>
+    <figure class="diagram">
+        <img src="assets/images/facade/pca-clusters.png"
+            alt="Scatter plot titled Clusters (k=3) in PCA space: 400 building facade images projected onto two principal components and colored by k-means cluster, forming three compact but partially overlapping groups."
+            class="demo-image">
+        <figcaption class="figure-caption">
+            Fig. 1 &mdash; 400 fa&ccedil;ade images projected onto the leading two principal
+            components, colored by their assigned k-means cluster. PC1 (40.3% of variance) primarily
+            captures variation in global regularity and repetition; PC2 (23.1%) reflects secondary
+            structural differences.
+        </figcaption>
+    </figure>
+    <p>
+        Cluster quality is checked with a from-scratch Silhouette coefficient, scoring how well each
+        sample fits its own cluster relative to the next-closest one:
+    </p>
+    <div class="equation">$$s(i) = \frac{b(i) - a(i)}{\max\{a(i),\, b(i)\}}$$</div>
+    <p>
+        where <code>a(i)</code> is the mean distance from sample <code>i</code> to the rest of its own
+        cluster and <code>b(i)</code> the mean distance to the nearest other cluster; the reported score
+        averages <code>s(i)</code> over all samples. The Davies&ndash;Bouldin index instead balances
+        intra-cluster compactness against inter-cluster separation. For each cluster's scatter
+    </p>
+    <div class="equation">$$S_k = \frac{1}{|C_k|}\sum_{\mathbf{x}_i \in C_k} \lVert \mathbf{x}_i - \boldsymbol{\mu}_k \rVert$$</div>
+    <p>
+        the similarity between two clusters is
+    </p>
+    <div class="equation">$$R_{kj} = \frac{S_k + S_j}{\lVert \boldsymbol{\mu}_k - \boldsymbol{\mu}_j \rVert}$$</div>
+    <p>
+        and the index averages each cluster's worst-case similarity to any other cluster &mdash; lower
+        is better:
+    </p>
+    <div class="equation">$$\text{DB} = \frac{1}{K}\sum_{k=1}^{K} \max_{j \neq k} R_{kj}$$</div>
+    <p>
+        Finally, the PCA explained-variance ratio of each retained component,
+    </p>
+    <div class="equation">$$\text{EVR}_m = \frac{\lambda_m}{\sum_r \lambda_r}$$</div>
+    <p>
+        quantifies how much of the feature space's structure survives the 2-D projection shown above.
+        The full set of results:
+    </p>
+    <table class="metrics-table">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Silhouette coefficient</th>
+                <td>0.38</td>
+            </tr>
+            <tr>
+                <th scope="row">Davies&ndash;Bouldin index</th>
+                <td>0.91</td>
+            </tr>
+            <tr>
+                <th scope="row">PCA variance (PC1)</th>
+                <td>40.3%</td>
+            </tr>
+            <tr>
+                <th scope="row">PCA variance (PC2)</th>
+                <td>23.1%</td>
+            </tr>
+            <tr>
+                <th scope="row">PCA variance (PC1 + PC2)</th>
+                <td>63.4%</td>
+            </tr>
+            <tr>
+                <th scope="row">Confidence (mean)</th>
+                <td>0.80</td>
+            </tr>
+            <tr>
+                <th scope="row">Confidence (median)</th>
+                <td>0.83</td>
+            </tr>
+            <tr>
+                <th scope="row">Confidence (P10 / P90)</th>
+                <td>0.59 / 0.97</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        Taken together, the metrics point to a balanced trade-off between cluster separation and
+        architectural variability &mdash; moderate Silhouette/Davies&ndash;Bouldin scores are expected
+        given real fa&ccedil;ades sit on a continuum rather than in three hard buckets, while the
+        confidence distribution (mean 0.80, median 0.83) shows most assignments are unambiguous, with
+        the lower P10 tail marking the transitional cases visible as overlap in the PCA plot above.
+    </p>
+
+    <h2 id="facade-usage" class="content-heading">Running the project</h2>
+    <p>
+        The pipeline is split into four standalone scripts. <code>symmetry_features.py</code> scans a
+        local image directory and writes a <code>features.csv</code>. <code>train_cluster_model.py</code>
+        fits standardization, PCA and k-means on that CSV and saves a <code>cluster_model.npz</code>.
+        <code>predict_cluster.py</code> loads that model and assigns new images to the nearest center.
+        <code>metrics.py</code> is run optionally afterward to report Silhouette, Davies&ndash;Bouldin
+        and confidence statistics for the resulting clustering.
+    </p>
+</div>
