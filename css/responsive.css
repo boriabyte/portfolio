@@ -15,5 +15,8 @@
 
     .panel {
         left: 0;
+
+        /* Content reads from the top on small screens; centering would clip it when it overflows */
+        justify-content: flex-start;
     }
 }

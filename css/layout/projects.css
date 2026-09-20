@@ -48,32 +48,3 @@
 .project-detail.in-view {
     transform: translateX(0);
 }
-
-.back-button {
-    width: 100%;
-    max-width: 760px;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-
-    margin-bottom: 16px;
-    padding: 0;
-
-    background: none;
-    border: none;
-
-    font-family: 'Poppins', sans-serif;
-    font-size: 32px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.back-button:hover {
-    color: #e40303;
-}
-
-.back-arrow {
-    font-size: 24px;
-}

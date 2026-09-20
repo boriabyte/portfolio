@@ -1,0 +1,47 @@
+/* ---------- Back buttons: project detail pages and (touch / small screens) About and Projects ---------- */
+
+.back-button,
+.section-back {
+    width: 100%;
+    max-width: 760px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 16px;
+    padding: 0;
+
+    background: none;
+    border: none;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover,
+.section-back:hover {
+    color: #e40303;
+}
+
+.back-arrow {
+    font-size: 24px;
+}
+
+/*
+ * Section back buttons return to the home screen. Wheel and key navigation are
+ * unavailable on touch devices, and at this width the panels cover the home screen,
+ * so the button is the way back.
+ */
+.section-back {
+    display: none;
+}
+
+@media (pointer: coarse), (max-width: 1050px) {
+    .section-back {
+        display: inline-flex;
+    }
+}

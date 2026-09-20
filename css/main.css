@@ -13,6 +13,7 @@
 
 /* Components */
 @import url("components/icons.css");
+@import url("components/back-button.css");
 @import url("components/project-header.css");
 @import url("components/content.css");
 @import url("components/toc.css");

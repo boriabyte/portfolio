@@ -14,6 +14,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* "safe" keeps the top reachable when the content is taller than the panel */
+    justify-content: safe center;
     padding: 64px;
     overflow-y: auto;
     overflow-x: hidden;
