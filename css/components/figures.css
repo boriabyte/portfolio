@@ -21,6 +21,7 @@
 .demo-image {
     display: block;
     width: 100%;
+    height: auto;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
 }

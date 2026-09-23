@@ -5,6 +5,7 @@ import { loadPartials } from "./partials.js";
 import { renderMath } from "./math.js";
 import { initChat } from "./chat.js";
 import { initHighlights } from "./highlights.js";
+import { initDemoVideos } from "./videos.js";
 
 initChat();
 initNavigation();
@@ -12,4 +13,7 @@ initHighlights();
 initProjects();
 initToc();
 
-loadPartials().then(() => renderMath());
+loadPartials().then(() => {
+    renderMath();
+    initDemoVideos();
+});

@@ -7,6 +7,7 @@
 // A video the browser cannot play is swapped for the image in its data-fallback.
 
 import { ANIMATION_MS, WHEEL_THRESHOLD, WHEEL_BURST_GAP_MS } from "./config.js";
+import { watchFallback } from "./videos.js";
 
 // The title above the stack names the project of the clip in front. When the clip's
 // file name contains `match` (case-insensitive), " - label" is added to the title.
@@ -52,30 +53,11 @@ function show(index) {
     }, ANIMATION_MS);
 }
 
-function useFallback(video) {
-    const index = items.indexOf(video);
-    if (index === -1 || !video.dataset.fallback) return;
-
-    // Swap only once the image has loaded, so a missing fallback never replaces the video.
-    const image = new Image();
-    image.className = "highlight";
-    image.alt = video.getAttribute("aria-label") || "";
-    image.addEventListener("load", () => {
-        video.replaceWith(image);
-        items[index] = image;
+function watchPlayback(video) {
+    watchFallback(video, (image) => {
+        items[items.indexOf(video)] = image;
         render();
     });
-    image.src = video.dataset.fallback;
-}
-
-function watchPlayback(video) {
-    // The error may have fired before this module ran, so check for it as well as listening.
-    const isUnsupportedWebm = video.src.endsWith(".webm") && video.canPlayType('video/webm; codecs="vp9"') === "";
-    if (video.error || isUnsupportedWebm) {
-        useFallback(video);
-        return;
-    }
-    video.addEventListener("error", () => useFallback(video));
 }
 
 function onWheel(event) {
