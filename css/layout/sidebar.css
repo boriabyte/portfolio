@@ -35,6 +35,11 @@
     white-space: nowrap;
 }
 
+.home-title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
 .contact-links {
     display: flex;
     align-items: center;

@@ -24,7 +24,7 @@
         <div class="home-container">
             <div class="title-and-contacts">
                 <h1 class="home-title">
-                    Horia Scarlat
+                    <a href="#" class="home-title-link" data-section="home">Horia Scarlat</a>
                 </h1>
                 <nav class="contact-links">
                     <a href="https://www.linkedin.com/in/horia-mihai-scarlat/" target="_blank">
@@ -51,8 +51,19 @@
         </div>
     </div>
 
-    <!-- Reserved for a future project demo gif. Empty for now. -->
-    <div class="home-media" id="home-media"></div>
+    <!-- Project highlights. Scrolling over them rotates the stack (js/highlights.js). -->
+    <div class="home-media" id="home-media">
+        <h2 class="highlights-title">Highlights</h2>
+        <div class="highlights" data-nav-ignore>
+            <!-- data-fallback: shown instead when the browser cannot play the video. Optional. -->
+            <video class="highlight" src="assets/highlights/letters_asl.webm" autoplay loop muted playsinline
+                data-fallback="assets/highlights/letters_asl.gif"
+                aria-label="ASL translator recognising fingerspelled letters"></video>
+            <video class="highlight" src="assets/highlights/phrases_asl.webm" autoplay loop muted playsinline
+                data-fallback="assets/highlights/phrases_asl.gif"
+                aria-label="ASL translator recognising signed phrases"></video>
+        </div>
+    </div>
 
     <section id="about" class="panel">
         <button class="section-back" type="button" data-section="home">
