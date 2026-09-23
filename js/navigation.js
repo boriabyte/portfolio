@@ -31,6 +31,11 @@ let isAnimating = false;
 let lastWheelAt = 0;
 let burstEdges = { [-1]: false, [1]: false };
 
+// Wheel and key events inside these elements (e.g. the chat) belong to them, not to navigation.
+function isNavIgnored(event) {
+    return event.target instanceof Element && event.target.closest("[data-nav-ignore]") !== null;
+}
+
 // Read on every event so it follows the device (or emulation) changing at runtime.
 function isTouchDevice() {
     return window.matchMedia("(pointer: coarse)").matches;
@@ -71,6 +76,7 @@ function goTo(section) {
     if (enteredPanel) enteredPanel.scrollTop = 0;
 
     history.replaceState(null, "", section === "home" ? "#" : `#${section}`);
+    document.dispatchEvent(new CustomEvent("sectionchange", { detail: { section } }));
 
     setTimeout(() => {
         isAnimating = false;
@@ -85,7 +91,7 @@ function step(direction) {
 }
 
 function onWheel(event) {
-    if (isTouchDevice()) return;
+    if (isTouchDevice() || isNavIgnored(event)) return;
 
     // Decide once per gesture, before it has scrolled anything, whether it began at an edge.
     // Momentum that carries a scroll to the edge must not roll on into the next section.
@@ -101,7 +107,7 @@ function onWheel(event) {
 }
 
 function onKeyDown(event) {
-    if (isTouchDevice() || event.repeat) return;
+    if (isTouchDevice() || event.repeat || isNavIgnored(event)) return;
 
     const direction = KEY_DIRECTIONS[event.key];
     if (direction && isAtEdge(direction)) step(direction);

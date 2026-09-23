@@ -100,6 +100,40 @@
         <div class="project-detail" data-project="morse-code" data-partial="partials/projects/morse-code.html"></div>
         <div class="project-detail" data-project="pazaak" data-partial="partials/projects/pazaak.html"></div>
     </section>
+
+    <!-- Chat with the portfolio agent. Shown only in the Projects section (js/chat.js). -->
+    <div id="chat" class="chat" data-nav-ignore>
+        <div id="chat-window" class="chat-window" role="dialog" aria-labelledby="chat-title">
+            <header class="chat-header">
+                <h2 id="chat-title" class="chat-title">Ask about my projects</h2>
+                <button id="chat-close" class="chat-close" type="button" aria-label="Close chat">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+            <div id="chat-messages" class="chat-messages" aria-live="polite">
+                <div id="chat-intro" class="chat-intro">
+                    <p>I can answer questions about Horia's projects, skills and experience.</p>
+                    <div class="chat-suggestions">
+                        <button class="chat-suggestion" type="button">What does the ASL translator do?</button>
+                        <button class="chat-suggestion" type="button">Which technologies does Horia use?</button>
+                        <button class="chat-suggestion" type="button">Tell me about the facade classifier</button>
+                    </div>
+                </div>
+            </div>
+            <form id="chat-form" class="chat-form">
+                <textarea id="chat-input" class="chat-input" rows="1" maxlength="1000"
+                    placeholder="Ask a question..." aria-label="Your message"></textarea>
+                <button id="chat-send" class="chat-send" type="submit" aria-label="Send" disabled>
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </form>
+        </div>
+        <button id="chat-toggle" class="chat-toggle" type="button" aria-label="Open chat"
+            aria-expanded="false" aria-controls="chat-window">
+            <!-- Launcher symbol: swap this for any Font Awesome icon, an <img> or an inline <svg>. -->
+            <i class="fa-solid fa-comment-dots"></i>
+        </button>
+    </div>
 </body>
 
 </html>
