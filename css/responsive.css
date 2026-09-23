@@ -19,4 +19,13 @@
         /* Content reads from the top on small screens; centering would clip it when it overflows */
         justify-content: flex-start;
     }
+
+    .chat {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .chat-window {
+        height: min(520px, calc(100dvh - 32px));
+    }
 }
