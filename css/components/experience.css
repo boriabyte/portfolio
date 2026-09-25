@@ -1,0 +1,56 @@
+/* ---------- Experience: timeline of roles in the Experience panel ---------- */
+
+.experience-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.experience-item {
+    position: relative;
+    padding-left: 24px;
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Timeline marker, centered on the border */
+.experience-item::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: -7px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e40303;
+}
+
+.experience-item+.experience-item {
+    margin-top: 40px;
+}
+
+.experience-meta {
+    margin-bottom: 12px;
+}
+
+.experience-role {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.experience-org {
+    font-size: 18px;
+    color: #e40303;
+}
+
+.experience-dates {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.experience-points {
+    padding-left: 20px;
+}
+
+.experience-points li+li {
+    margin-top: 8px;
+}

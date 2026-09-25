@@ -1,4 +1,4 @@
-export const SECTIONS = ["home", "about", "projects"];
+export const SECTIONS = ["home", "about", "experience", "projects"];
 export const ANIMATION_MS = 700;
 export const WHEEL_THRESHOLD = 15;
 

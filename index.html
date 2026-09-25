@@ -44,8 +44,9 @@
             </h2>
             <div class="home-card">
                 <nav class="nav-links">
-                    <a href="#about" data-section="about">About</a>
-                    <a href="#projects" data-section="projects">Projects</a>
+                    <a href="#about" data-section="about">about</a>
+                    <a href="#experience" data-section="experience">experience</a>
+                    <a href="#projects" data-section="projects">projects</a>
                 </nav>
             </div>
         </div>
@@ -66,21 +67,51 @@
         <button class="section-back" type="button" data-section="home">
             <span class="back-arrow">&lt;</span> Back
         </button>
-        <h1 class="panel-title">
-            About
-        </h1>
-        <div class="panel-content">
-            <p>Electronic engineering graduate, with a focus on applied electronics and computer engineering.</p>
-            <p>Currently, I work as a software engineer, building scalable enterprise banking systems:
-                garnishment pipelines, back-office backend systems, large scale file imports, payment systems
-                and automation. I was the main backend developer for an internal automated testing framework
-                utilizing Selenium and Java, meant for fast-tracking company-built web applications testing
-                before production shipping.</p>
-            <p>I am strongly interested in machine learning, deep learning, computer vision and natural
-                language processing. I am currently pursuing a Master's Degree in Artificial Intelligence at
-                the "POLITEHNICA" University of Bucharest, with a thesis titled "American Sign Language
-                Translation using Numerical Feature Representations".</p>
+        <h1 class="panel-title terminal-title">about<span class="terminal-cursor" aria-hidden="true"></span></h1>
+        <div class="panel-content about">
+            <p class="about-lead">Hi, I'm Horia. I build banking systems, study machine learning, deep learning
+            and computer vision, and keep sharpening my core engineering skills along the way.</p>
+            <p>I studied applied electronics at POLITEHNICA Bucharest, and I'm now back there for a Master's
+                in Artificial Intelligence. My thesis teaches a computer to read American Sign Language.</p>
+
+            <h2 class="about-label">What I work with</h2>
+            <ul class="tag-list">
+                <li>Java</li>
+                <li>Python</li>
+                <li>C++</li>
+                <li>C</li>
+                <li>SQL</li>
+            </ul>
         </div>
+    </section>
+
+    <section id="experience" class="panel">
+        <button class="section-back" type="button" data-section="home">
+            <span class="back-arrow">&lt;</span> Back
+        </button>
+        <h1 class="panel-title terminal-title">experience<span class="terminal-cursor" aria-hidden="true"></span></h1>
+        <!-- One .experience-item per role, most recent first. -->
+        <ol class="panel-content experience-list">
+            <li class="experience-item">
+                <div class="experience-meta">
+                    <h2 class="experience-role">Software Engineer</h2>
+                    <p class="experience-org">Advahoo, Bucharest</p>
+                    <p class="experience-dates">June 2024 - Present</p>
+                </div>
+                <ul class="experience-points">
+                    <li>Built an internal Selenium automation framework with 50-60 reusable handlers for banking
+                        UI components.</li>
+                    <li>Optimized ING data-import pipelines with streaming SAX parsing: 500K+ records in seconds,
+                        with no more OutOfMemory failures.</li>
+                    <li>Reverse-engineered the National Trade Register Office's browser flows to automate
+                        company-data retrieval without a public API.</li>
+                    <li>Automated vehicle-data lookup and extraction for Porsche Bank.</li>
+                    <li>Implemented banking workflows for UniCredit (PDF signature validation), MAIB (QR
+                        payments), Salt Bank and Garanti BBVA (garnishments).</li>
+                    <li>Automated the daily import of National Bank of Romania exchange rates.</li>
+                </ul>
+            </li>
+        </ol>
     </section>
 
     <section id="projects" class="panel">
@@ -88,9 +119,7 @@
             <button class="section-back" type="button" data-section="home">
                 <span class="back-arrow">&lt;</span> Back
             </button>
-            <h1 class="panel-title">
-                Projects
-            </h1>
+            <h1 class="panel-title terminal-title">projects<span class="terminal-cursor" aria-hidden="true"></span></h1>
             <ul class="panel-content project-links">
                 <li><a href="#" class="project-link" data-project="asl">American Sign Language Translator</a></li>
                 <li><a href="#" class="project-link" data-project="lsc">Language Specific Correction for Romanian</a></li>

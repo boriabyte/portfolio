@@ -1,0 +1,38 @@
+/* ---------- Terminal title: "> name" prompt with a blinking cursor (section panels) ---------- */
+
+/* The ">" is drawn as a thin rotated corner rather than a glyph, so its stroke and height can be
+   matched to the lowercase title: it is centered on the x-height. */
+.terminal-title::before {
+    content: "";
+    display: inline-block;
+    width: 0.3em;
+    height: 0.3em;
+    margin: 0 0.4em 0 0.05em;
+    vertical-align: 0.12em;
+
+    border-top: 0.06em solid #e40303;
+    border-right: 0.06em solid #e40303;
+    transform: rotate(45deg);
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 0.8em;
+    margin-left: 6px;
+    vertical-align: -0.05em;
+    background: currentColor;
+    animation: terminal-blink 1s steps(1) infinite;
+}
+
+@keyframes terminal-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .terminal-cursor {
+        animation: none;
+    }
+}

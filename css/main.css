@@ -14,8 +14,11 @@
 /* Components */
 @import url("components/icons.css");
 @import url("components/back-button.css");
+@import url("components/terminal-title.css");
 @import url("components/project-header.css");
 @import url("components/content.css");
+@import url("components/about.css");
+@import url("components/experience.css");
 @import url("components/toc.css");
 @import url("components/figures.css");
 @import url("components/equation.css");

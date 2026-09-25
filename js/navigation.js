@@ -1,4 +1,4 @@
-// Section navigation: home / about / projects.
+// Section navigation: home / about / experience / projects.
 //
 // Touch devices navigate only through explicit controls (nav links and back buttons),
 // because a drag there means "scroll the content". Everywhere else the wheel and the
@@ -16,6 +16,7 @@ import { isProjectDetailOpen, closeProjectDetails } from "./projects.js";
 
 const panels = {
     about: document.getElementById("about"),
+    experience: document.getElementById("experience"),
     projects: document.getElementById("projects"),
 };
 

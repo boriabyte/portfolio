@@ -19,7 +19,7 @@ then open <http://localhost:8000>. The VS Code integrated browser / Live Preview
 ## Structure
 
 ```
-index.html                 Page shell: sidebar, About and the project list
+index.html                 Page shell: sidebar, About, Experience and the project list
 partials/
   projects/                One HTML fragment per project detail page
 css/
@@ -31,7 +31,7 @@ css/
 js/
   main.js                  Entry point, wires the modules together
   config.js                Constants (sections, animation and wheel thresholds)
-  navigation.js            Home / About / Projects navigation (links and back buttons everywhere;
+  navigation.js            Home / About / Experience / Projects navigation (links and back buttons everywhere;
                            wheel and keys on non-touch devices, only at a panel's scroll edge)
   projects.js              Project list and the sliding project detail panels
   partials.js              Loads data-partial fragments into the page
