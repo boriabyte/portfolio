@@ -6,8 +6,10 @@ import { renderMath } from "./math.js";
 import { initChat } from "./chat.js";
 import { initHighlights } from "./highlights.js";
 import { initDemoVideos } from "./videos.js";
+import { initTyping } from "./typing.js";
 
 initChat();
+initTyping();
 initNavigation();
 initHighlights();
 initProjects();

@@ -1,0 +1,83 @@
+/* ---------- Motion: entrance and hover animations, kept together so they can be tuned or dropped ---------- */
+
+/* Everything here is skipped for visitors who ask for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+
+    /* Sidebar: title, tagline and nav rise in once, one after another, on page load */
+    .home-container>* {
+        animation: rise-in 0.6s ease both;
+    }
+
+    .home-container>:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .home-container>:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    /* The line under the title draws itself from the left */
+    .title-and-contacts {
+        position: relative;
+        border-bottom-color: transparent;
+    }
+
+    .title-and-contacts::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -2px;
+        height: 2px;
+        background: white;
+
+        transform-origin: left;
+        animation: draw-line 0.8s ease 0.3s both;
+    }
+
+    /* Nav links: an underline slides in on hover */
+    .nav-links a {
+        position: relative;
+    }
+
+    .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -4px;
+        height: 2px;
+        background: currentColor;
+
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        transform: scaleX(1);
+    }
+
+    /* Panels: the title types itself (js/typing.js), then the content fades up */
+    .terminal-title.is-typing .terminal-cursor {
+        animation: none;
+    }
+
+    .panel.in-view>.panel-content,
+    .panel.in-view>.projects-list-view>.panel-content {
+        animation: rise-in 0.5s ease 0.9s both;
+    }
+}
+
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+}
+
+@keyframes draw-line {
+    from {
+        transform: scaleX(0);
+    }
+}

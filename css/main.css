@@ -25,4 +25,7 @@
 @import url("components/tables.css");
 @import url("components/chat.css");
 
+/* Animations, grouped so they can be dropped in one go */
+@import url("motion.css");
+
 @import url("responsive.css");

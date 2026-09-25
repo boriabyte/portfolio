@@ -27,6 +27,7 @@ css/
   base.css                 Reset, page defaults, design tokens
   layout/                  Page-level structure (sidebar, panels, project list and detail)
   components/              Reusable pieces (back buttons, content, toc, figures, tables, equations, ...)
+  motion.css               Entrance and hover animations (off under prefers-reduced-motion)
   responsive.css           Small-screen overrides, must stay last
 js/
   main.js                  Entry point, wires the modules together
@@ -35,6 +36,7 @@ js/
                            wheel and keys on non-touch devices, only at a panel's scroll edge)
   projects.js              Project list and the sliding project detail panels
   partials.js              Loads data-partial fragments into the page
+  typing.js                Types a section's title out when its panel slides in
   toc.js                   Smooth-scrolling table of contents links
   math.js                  KaTeX rendering
   chat.js                  Chat widget (Projects section only), talks to the chat proxy
