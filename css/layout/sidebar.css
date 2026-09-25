@@ -65,6 +65,7 @@
 .home-description {
     max-width: 760px;
     font-size: clamp(16px, 1.8vw, 24px);
+    font-weight: 400;
 
     margin: 0;
     text-align: left;
